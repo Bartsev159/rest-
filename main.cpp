@@ -1,65 +1,49 @@
-// =========================
-// main.cpp
-// =========================
-
 #include <iostream>
-
-// подключение модулей
 #include "camera.cpp"
 #include "ai_assistant.cpp"
+#include "robot.cpp"
 
 class RobotSystem {
 private:
     Camera camera;
-
     AIAssistant ai;
+    Robot robot;
 
 public:
-
     void run(int steps) {
 
         for (int i = 0; i < steps; i++) {
 
-            Frame frame =
-                camera.captureFrame();
-
-            camera.printFrameInfo(
-                frame
-            );
+            Frame frame = camera.captureFrame();
 
             std::string decision =
-                ai.analyzeFrame(
-                    frame
-                );
+                ai.analyzeFrame(frame);
 
-            ai.printAnalysis(
-                frame,
-                decision
-            );
-
-            if (
-                decision ==
-                "BOOST_MODE"
-            ) {
-
-                std::cout
-                    << "[BOOST] "
-                    << "Propeller module activated"
-                    << std::endl;
+            // 🚀 ДВИЖЕНИЕ РОБОТА
+            if (decision == "MOVE") {
+                robot.resetSpeed();
+                robot.move();
             }
 
-            std::cout
-                << "----------------------"
-                << std::endl;
+            else if (decision == "BOOST_MODE") {
+                robot.boost();
+            }
+
+            else if (decision == "STOP") {
+                // ничего не делаем
+            }
+
+            // вывод
+            camera.printFrameInfo(frame);
+            ai.printAnalysis(frame, decision);
+            robot.print();
+
+            std::cout << "------------------" << std::endl;
         }
     }
 };
 
 int main() {
-
     RobotSystem system;
-
     system.run(20);
-
-    return 0;
 }
